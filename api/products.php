@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo $productService->createProduct($name, $description, $price, $image, $quantity, $ingredients, $offers, $rate, $category_id, $category_id);
 }
 
-// هيبعت الداتا ك جيسون
+// هيبعت الداتا ك جيسون_
 if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
     header('Content-Type: application/json');
     $data = json_decode(file_get_contents("php://input"), true);

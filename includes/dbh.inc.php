@@ -18,7 +18,7 @@ try {
             email VARCHAR(100) NOT NULL,
             phone_number VARCHAR(15),
             address TEXT,
-            role VARCHAR(15) DEFAULT 'admin'
+            role VARCHAR(15) DEFAULT 'customer'
         )",
         "CREATE TABLE orders (
             id INT AUTO_INCREMENT PRIMARY KEY,
