@@ -27,7 +27,7 @@ class PaymentService
 
             $statement->close();
             http_response_code(201);
-            return json_encode(["success" => "Product created successfully"]);
+            return json_encode(["success" => "Payment created successfully"]);
         } catch (Exception $exception) {
             http_response_code(400);
             return json_encode(["error" => $exception->getMessage()]);
