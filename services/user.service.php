@@ -1,12 +1,16 @@
 <?php
 
+require_once __DIR__ . '/jwt.service.php';
+
 class UserService
 {
     private $mysqli;
+    private JWTService $jwtService;
 
     public function __construct(mysqli $mysqli)
     {
         $this->mysqli = $mysqli;
+        $this->jwtService = new JWTService();
     }
 
     public function signup($username, $email, $password, $phone_number, $address)
@@ -28,16 +32,12 @@ class UserService
             if ($result->num_rows > 0) {
                 throw new Exception("User with this email already exists");
             }
+
             /**
              * NOTE:
              * I'll use password_hash and password_verify
              * for hashing and verifying the password.
              * PASSWORD_DEFAULT: the best available hashing algorithm in PHP.
-             */
-
-            /**
-             * TODO: Generate a JSON Web Token (JWT).
-             * John Snow / John Snow / John Snow / John Snow / John Snow
              */
 
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -48,6 +48,19 @@ class UserService
             if ($statement->affected_rows === 0) {
                 throw new Exception("Failed to create product.");
             }
+
+            $newUserId = $this->mysqli->insert_id;
+            $token = $this->jwtService->generateJWT($newUserId);
+            setcookie(
+                "auth_token",
+                $token,
+                time() + 10 * 86400,
+                "/",
+                "localhost",
+                true,
+                true
+            );
+
             $statement->close();
             http_response_code(201);
             return json_encode(["success" => "User Created Successfully"]);
@@ -63,13 +76,14 @@ class UserService
             if (!isset($email, $password)) {
                 throw new Exception("Missing informatio, Please provide (email, password)");
             }
-            $checkForUserExists = "SELECT email, password FROM users WHERE email = ?";
+            $checkForUserExists = "SELECT id, email, password FROM users WHERE email = ?";
             $stmt = $this->mysqli->prepare($checkForUserExists);
             $stmt->bind_param("s", $email);
             $stmt->execute();
             $result = $stmt->get_result();
             $hashedPasswordFromDB = "";
-            if ($row = $result->fetch_object()) {
+            $row = $result->fetch_object();
+            if ($row) {
                 $hashedPasswordFromDB = $row->password;
             } else {
                 throw new Exception("No user found with the given email.");
@@ -77,6 +91,19 @@ class UserService
             if (!password_verify($password, $hashedPasswordFromDB)) {
                 throw new Exception("Incorrect Email or password");
             }
+
+            $userId = $row->id;
+            $token = $this->jwtService->generateJWT($userId);
+            setcookie(
+                "auth_token",
+                $token,
+                time() + 10 * 86400,
+                "/",
+                "localhost",
+                true,
+                true
+            );
+            $_SESSION['user'] = $userId;
             http_response_code(200);
             return json_encode(["success" => "Login successful"]);
         } catch (Exception $exception) {
