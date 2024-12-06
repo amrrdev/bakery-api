@@ -27,3 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo $pyamentService->CreateNewPyament($card_number, $cvv, $name_on_card);
 
 }
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    header('Content-Type: application/json');
+    $authResponse = $jwtService->isAuthenticated();
+    if ($authResponse !== true) {
+        echo $authResponse;
+        return;
+    }
+    echo $pyamentService->getUserPayments();
+}
