@@ -23,7 +23,6 @@ class UserService
                 throw new Exception("Invalid email format");
             }
 
-            // بضشوف لو اليوز بالايميل ده موجود ولا لا 
             $checkForUserExists = "SELECT email FROM users WHERE email = ?";
             $stmt = $this->mysqli->prepare($checkForUserExists);
             $stmt->bind_param("s", $email);
