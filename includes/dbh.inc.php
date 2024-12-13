@@ -18,7 +18,7 @@ try {
             email VARCHAR(100) NOT NULL,
             phone_number VARCHAR(15),
             address TEXT,
-            role VARCHAR(15) DEFAULT 'customer'
+            role VARCHAR(15) DEFAULT 'admin'
         )",
         "CREATE TABLE orders (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -50,7 +50,6 @@ try {
             id INT AUTO_INCREMENT PRIMARY KEY,
             order_id INT NOT NULL,
             product_id INT NOT NULL,
-            quantity INT NOT NULL DEFAULT 1,
             FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
             FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
         )",

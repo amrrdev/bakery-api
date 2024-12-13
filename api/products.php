@@ -1,12 +1,11 @@
 <?php
 require_once "./../config/database.php";
 require_once "./../services/product.service.php";
-require_once "./../services/jwt.service.php";
+
 $database = new Database();
 $connection = $database->getConnection();
 
 $productService = new ProductService($connection);
-$jwtService = new JWTService();
 
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
     header('Content-Type: application/json');
@@ -14,21 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         $id = (int) $_GET['id'];
         echo $productService->getProductById($id);
     } else {
-        /**
-         *  Check if the user is authenticated by calling the `isAuthenticated` method from the JWT service.
-         *  If the method does not return `true`, output the response (e.g., error message) and terminate the execution.
-         *  This ensures that only authenticated users can proceed with the requested operation.
-
-         */
-        // $authResponse = $jwtService->isAuthenticated();
-        // if ($authResponse !== true) {
-        //     echo $authResponse;
-        //     return;
-        // }
         echo $productService->getAllProducts();
     }
 }
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
@@ -46,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo $productService->createProduct($name, $description, $price, $image, $quantity, $ingredients, $offers, $rate, $category_id, $category_id);
 }
 
-// هيبعت الداتا ك جيسون_
+// هيبعت الداتا ك جيسون
 if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
     header('Content-Type: application/json');
     $data = json_decode(file_get_contents("php://input"), true);
